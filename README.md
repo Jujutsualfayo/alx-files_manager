@@ -42,15 +42,10 @@ JWT: JSON Web Tokens for authentication.
 Sharp: Library for image processing and thumbnail generation.
 Installation
 Clone the repository:
-
-bash
-Copy code
-git clone https://github.com/your-username/alx-files_manager.git
+git clone https://github.com/Jujutsualfayo/alx-files_manager.git
 cd alx-files_manager
 Install dependencies:
 
-bash
-Copy code
 npm install
 Set up MongoDB and Redis on your local machine or connect to cloud services.
 
@@ -58,18 +53,15 @@ Configure environment variables (see Environment Variables).
 
 Start the server:
 
-bash
-Copy code
 npm start
 Usage
 Start the server:
-bash
-Copy code
+
 npm start
 Access the API via http://localhost:5000 or your configured host and port.
 Project Structure
-plaintext
-Copy code
+
+
 .
 ├── controllers/       # Handle API requests and responses
 ├── routes/            # Define API routes
@@ -81,6 +73,8 @@ Copy code
 ├── .env               # Environment variables
 ├── package.json       # Dependencies and scripts
 └── README.md          # Project documentation
+
+
 API Endpoints
 Authentication
 POST /auth/login: Login and receive a token.
@@ -103,6 +97,8 @@ REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 JWT_SECRET=your_jwt_secret
 THUMBNAIL_DIR=./thumbnails
+
+
 Background Jobs
 This project uses Bull for handling background tasks like generating image thumbnails. The tasks are managed using Redis.
 
@@ -114,16 +110,18 @@ node workers/thumbnailWorker.js
 Testing
 Run automated tests to ensure all features are working as expected:
 
-bash
-Copy code
 npm test
+
+
 Contributing
 We welcome contributions to the ALX Files Manager project! To contribute:
 
+
 Fork the repository.
+
+
 Create a feature branch:
-bash
-Copy code
+
 git checkout -b new-feature
 Commit your changes and push to your fork.
 Open a Pull Request.
@@ -131,6 +129,6 @@ License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
 Enjoy Building and Learning! 🚀
-If you have any questions or need guidance, feel free to reach out or refer to the project documentation.
+
 
 
