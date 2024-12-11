@@ -1,56 +1,39 @@
 import sha1 from 'sha1';
 import Queue from 'bull/lib/queue';
-import { ObjectID } from 'mongodb';
 import dbClient from '../utils/db';
-import redisClient from '../utils/redis';
-
 
 const userQueue = new Queue('email sending');
 
+export default class UsersController {
+  static async postNew(req, res) {
+    const email = req.body ? req.body.email : null;
+    const password = req.body ? req.body.password : null;
 
-class UsersController {
-  static async postNew(request, response) {
-    const { email, password } = request.body;
     if (!email) {
-      response.status(400).json({ error: 'Missing email' });
+      res.status(400).json({ error: 'Missing email' });
       return;
     }
     if (!password) {
-      response.status(400).json({ error: 'Missing password' });
+      res.status(400).json({ error: 'Missing password' });
       return;
     }
-    const usersCollection = dbClient.db.collection('users');
-    const existingEmail = await usersCollection.findOne({ email });
-    if (existingEmail) {
-      response.status(400).json({ error: 'Already exist' });
-      return;
-    }
+    const user = await (await dbClient.usersCollection()).findOne({ email });
 
-    const shaHashedPw = sha1(password);
-    const inserted = await usersCollection.insertOne({ email, password: shaHashedPw });
-    const userId = inserted.insertedId;
-    userQueue.add({ userId })
-    response.status(201).json({ id: userId, email });
+    if (user) {
+      res.status(400).json({ error: 'Already exist' });
+      return;
+    }
+    const insertionInfo = await (await dbClient.usersCollection())
+      .insertOne({ email, password: sha1(password) });
+    const userId = insertionInfo.insertedId.toString();
+
+    userQueue.add({ userId });
+    res.status(201).json({ email, id: userId });
   }
 
-  static async getMe(request, response) {
-    const token = request.header('X-Token');
-    const key = `auth_${token}`;
-    const userId = await redisClient.get(key);
-    // convert id from string to the ObjectID format it usually is in mongodb
-    const userObjId = new ObjectID(userId);
-    if (userId) {
-      const users = dbClient.db.collection('users');
-      const existingUser = await users.findOne({ _id: userObjId });
-      if (existingUser) {
-        response.status(200).json({ id: userId, email: existingUser.email });
-      } else {
-        response.status(401).json({ error: 'Unauthorized' });
-      }
-    } else {
-      response.status(401).json({ error: 'Unauthorized' });
-    }
+  static async getMe(req, res) {
+    const { user } = req;
+
+    res.status(200).json({ email: user.email, id: user._id.toString() });
   }
 }
-
-module.exports = UsersController;
